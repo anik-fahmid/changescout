@@ -1,7 +1,7 @@
 <?php
 /*
 Plugin Name: ChangeScout
-Plugin URI: https://github.com/anik-fahmid/changescout
+Plugin URI: https://fahmidsroadmap.com/changescout/
 Description: AI-powered changelog tracking and summarization with multi-provider support.
 Version: 1.0
 Author: Fahmid Hasan
@@ -711,7 +711,7 @@ class AIChangelogSummary {
 					<h4><?php esc_html_e( 'External Services', 'changescout' ); ?></h4>
 					<p><?php esc_html_e( 'This plugin connects to the following external services:', 'changescout' ); ?></p>
 					<ul>
-						<li><strong>Jina Reader (r.jina.ai)</strong> &mdash; <?php esc_html_e( 'Converts changelog pages to clean text before AI processing. The URL of each tracked page is sent to Jina on every fetch.', 'changescout' ); ?> <a href="https://jina.ai/privacy-policy/" target="_blank" rel="noopener noreferrer"><?php esc_html_e( 'Privacy Policy', 'changescout' ); ?></a></li>
+						<li><strong>Jina Reader (r.jina.ai)</strong> &mdash; <?php esc_html_e( 'Converts changelog pages to clean text before AI processing. The URL of each tracked page is sent to Jina on every fetch.', 'changescout' ); ?> <a href="https://jina.ai/legal/" target="_blank" rel="noopener noreferrer"><?php esc_html_e( 'Privacy Policy', 'changescout' ); ?></a></li>
 						<li><strong>Google Gemini / OpenAI / Anthropic Claude</strong> &mdash; <?php esc_html_e( 'Changelog page content is sent to your chosen AI provider to generate the summary. No personal data is transmitted.', 'changescout' ); ?></li>
 					</ul>
 				</div>
