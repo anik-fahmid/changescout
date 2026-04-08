@@ -1,4 +1,4 @@
-=== Changelog Tracker ===
+=== ChangeScout ===
 Contributors: anikfahmid
 Tags: changelog, ai, email notifications, release notes, automation
 Requires at least: 5.6
@@ -12,7 +12,7 @@ AI-powered changelog tracking that monitors plugin/service release pages and ema
 
 == Description ==
 
-**Changelog Tracker** monitors changelog URLs (plugin pages, SaaS apps, documentation sites) and uses AI to generate plain-English summaries of what changed. Summaries are delivered to your inbox on your chosen schedule or on demand.
+**ChangeScout** monitors changelog URLs (plugin pages, SaaS apps, documentation sites) and uses AI to generate plain-English summaries of what changed. Summaries are delivered to your inbox on your chosen schedule or on demand.
 
 = Key Features =
 
@@ -32,7 +32,7 @@ This plugin connects to the following external services. By using this plugin, y
 **Jina Reader (r.jina.ai)**
 Used to convert changelog web pages into clean, readable text for AI processing. The URL of each tracked changelog page is sent to Jina Reader on each fetch.
 * Service: https://jina.ai
-* Privacy Policy: https://jina.ai/privacy-policy/
+* Privacy Policy: https://jina.ai/legal/
 
 **Google Gemini API**
 Used for AI summarization when Gemini is selected as the provider. Changelog page content is sent to the API.
@@ -53,9 +53,9 @@ No data is collected or stored by the plugin author. All external API calls are 
 
 == Installation ==
 
-1. Upload the `changelog-tracker` folder to `/wp-content/plugins/`
+1. Upload the `changescout` folder to `/wp-content/plugins/`
 2. Activate the plugin through the **Plugins** menu in WordPress
-3. Navigate to **Settings > Changelog Tracker**
+3. Navigate to **Settings > ChangeScout**
 4. Enter your AI provider API key (Gemini, OpenAI, or Claude)
 5. Add your changelog URLs to track
 6. Configure your notification email and schedule
@@ -96,18 +96,15 @@ Enable 2-Factor Authentication on your Google account, then generate an App Pass
 == Changelog ==
 
 = 1.0 =
-* Renamed plugin to Changelog Tracker
-* Added auto-detect changelog URL feature
-* Added SMTP configuration with test button
-* Added eye toggle for API key and password fields
-* Fixed force-fetch isolation from scheduled emails
-* Improved content extraction via Jina Reader
-* Fixed PHP execution timeout on multi-URL fetch
-
-= 1.0 =
 * Initial release
+* AI-powered changelog summaries with Gemini, OpenAI, and Claude
+* Auto-detect changelog URLs from any domain
+* SMTP configuration with test button
+* Eye toggle for API key and password fields
+* Force-fetch isolation from scheduled emails
+* Content extraction via Jina Reader
 
 == Upgrade Notice ==
 
 = 1.0 =
-Major update with SMTP support, auto-detect, and improved email reliability. Re-enter your API key after upgrading.
+Initial release.

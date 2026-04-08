@@ -33,12 +33,12 @@ class AICS_Auto_Detect {
         check_ajax_referer( 'aics_nonce', 'security' );
 
         if ( ! current_user_can( 'manage_options' ) ) {
-            wp_send_json_error( [ 'message' => __( 'Permission denied.', 'changelog-tracker' ) ] );
+            wp_send_json_error( [ 'message' => __( 'Permission denied.', 'changescout' ) ] );
         }
 
         $domain = isset( $_POST['domain'] ) ? esc_url_raw( trim( $_POST['domain'] ) ) : '';
         if ( empty( $domain ) ) {
-            wp_send_json_error( [ 'message' => __( 'Please enter a domain URL.', 'changelog-tracker' ) ] );
+            wp_send_json_error( [ 'message' => __( 'Please enter a domain URL.', 'changescout' ) ] );
         }
 
         // Normalize domain.
@@ -78,13 +78,13 @@ class AICS_Auto_Detect {
         if ( empty( $found ) ) {
             wp_send_json_error( [
                 /* translators: %s: domain base URL */
-                'message' => sprintf( __( 'No changelog pages found on %s.', 'changelog-tracker' ), esc_html( $base ) ),
+                'message' => sprintf( __( 'No changelog pages found on %s.', 'changescout' ), esc_html( $base ) ),
             ] );
         }
 
         wp_send_json_success( [
             /* translators: %d: number of changelog pages found */
-            'message' => sprintf( __( 'Found %d potential changelog page(s).', 'changelog-tracker' ), count( $found ) ),
+            'message' => sprintf( __( 'Found %d potential changelog page(s).', 'changescout' ), count( $found ) ),
             'urls'    => array_values( $found ),
         ] );
     }

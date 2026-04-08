@@ -70,7 +70,7 @@ jQuery(document).ready(function ($) {
         preview.html('<p>Fetching changelogs' + (skipCache ? ' (fresh)' : '') + '...</p>');
 
         var data = {
-            action: 'preview_fetch_changelog',
+            action: 'aics_preview_fetch_changelog',
             security: AICS.nonce
         };
         if (skipCache) {
@@ -173,7 +173,7 @@ jQuery(document).ready(function ($) {
             url: AICS.ajax_url,
             type: 'POST',
             data: {
-                action: 'test_wp_mail',
+                action: 'aics_test_wp_mail',
                 security: AICS.nonce
             },
             success: function (response) {

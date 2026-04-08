@@ -66,7 +66,7 @@ class AICS_Content_Extractor {
                 'Accept'     => 'text/plain',
                 'x-no-cache' => 'true',
             ],
-            'user-agent' => 'Changelog Tracker WordPress Plugin',
+            'user-agent' => 'ChangeScout WordPress Plugin',
         ] );
 
         if ( is_wp_error( $response ) ) {

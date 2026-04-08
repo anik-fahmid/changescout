@@ -1,12 +1,12 @@
 <?php
 /*
-Plugin Name: Changelog Tracker
-Plugin URI: https://fahmidsroadmap.com/changelog-tracker/
+Plugin Name: ChangeScout
+Plugin URI: https://github.com/anik-fahmid/changescout
 Description: AI-powered changelog tracking and summarization with multi-provider support.
 Version: 1.0
 Author: Fahmid Hasan
 Author URI: https://fahmidsroadmap.com/
-Text Domain: changelog-tracker
+Text Domain: changescout
 License: GPLv2 or later
 License URI: https://www.gnu.org/licenses/gpl-2.0.html
 Requires at least: 5.6
@@ -56,8 +56,8 @@ class AIChangelogSummary {
 
 		add_action( 'wp_dashboard_setup', [ $this, 'add_dashboard_widget' ] );
 
-		add_action( 'wp_ajax_preview_fetch_changelog', [ $this, 'handle_changelog_fetch' ] );
-		add_action( 'wp_ajax_test_wp_mail', [ $this, 'test_wp_mail' ] );
+		add_action( 'wp_ajax_aics_preview_fetch_changelog', [ $this, 'handle_changelog_fetch' ] );
+		add_action( 'wp_ajax_aics_test_wp_mail', [ $this, 'test_wp_mail' ] );
 		add_action( 'wp_ajax_aics_force_fetch', [ $this, 'handle_force_fetch' ] );
 
 		add_action( 'phpmailer_init', [ $this, 'configure_smtp' ] );
@@ -79,15 +79,15 @@ class AIChangelogSummary {
 	public function add_custom_schedules( $schedules ) {
 		$schedules['weekly'] = [
 			'interval' => 7 * DAY_IN_SECONDS,
-			'display'  => esc_html__( 'Once Weekly', 'changelog-tracker' ),
+			'display'  => esc_html__( 'Once Weekly', 'changescout' ),
 		];
 		$schedules['biweekly'] = [
 			'interval' => 14 * DAY_IN_SECONDS,
-			'display'  => esc_html__( 'Every Two Weeks', 'changelog-tracker' ),
+			'display'  => esc_html__( 'Every Two Weeks', 'changescout' ),
 		];
 		$schedules['monthly'] = [
 			'interval' => 30 * DAY_IN_SECONDS,
-			'display'  => esc_html__( 'Once Monthly', 'changelog-tracker' ),
+			'display'  => esc_html__( 'Once Monthly', 'changescout' ),
 		];
 		return apply_filters( 'aics_cron_schedules', $schedules );
 	}
@@ -146,10 +146,10 @@ class AIChangelogSummary {
 
 	public function add_plugin_page() {
 		add_options_page(
-			__( 'Changelog Tracker', 'changelog-tracker' ),
-			__( 'Changelog Tracker', 'changelog-tracker' ),
+			__( 'Changelog Tracker', 'changescout' ),
+			__( 'Changelog Tracker', 'changescout' ),
 			'manage_options',
-			'changelog-tracker',
+			'changescout',
 			[ $this, 'render_settings_page' ]
 		);
 	}
@@ -158,7 +158,7 @@ class AIChangelogSummary {
 
 	public function init_settings() {
 		/* ── General group ── */
-		register_setting( $this->general_group, 'changelog_urls', [
+		register_setting( $this->general_group, 'aics_changelog_urls', [
 			'type'              => 'array',
 			'sanitize_callback' => [ $this, 'sanitize_changelog_urls' ],
 		] );
@@ -167,15 +167,15 @@ class AIChangelogSummary {
 			'sanitize_callback' => 'sanitize_text_field',
 			'default'           => 'gemini',
 		] );
-		register_setting( $this->general_group, 'gemini_api_key', [
+		register_setting( $this->general_group, 'aics_gemini_api_key', [
 			'type'              => 'string',
 			'sanitize_callback' => 'sanitize_text_field',
 		] );
-		register_setting( $this->general_group, 'openai_api_key', [
+		register_setting( $this->general_group, 'aics_openai_api_key', [
 			'type'              => 'string',
 			'sanitize_callback' => 'sanitize_text_field',
 		] );
-		register_setting( $this->general_group, 'claude_api_key', [
+		register_setting( $this->general_group, 'aics_claude_api_key', [
 			'type'              => 'string',
 			'sanitize_callback' => 'sanitize_text_field',
 		] );
@@ -186,7 +186,7 @@ class AIChangelogSummary {
 		] );
 
 		/* ── Notifications group ── */
-		register_setting( $this->notifications_group, 'notification_email', [
+		register_setting( $this->notifications_group, 'aics_notification_email', [
 			'type'              => 'string',
 			'sanitize_callback' => 'sanitize_email',
 		] );
@@ -246,27 +246,27 @@ class AIChangelogSummary {
 		/* ── Sections ── */
 		add_settings_section(
 			'aics_general_section',
-			esc_html__( 'AI & Changelog Sources', 'changelog-tracker' ),
+			esc_html__( 'AI & Changelog Sources', 'changescout' ),
 			function () {
-				echo '<p>' . esc_html__( 'Configure your AI provider and the changelog pages to monitor.', 'changelog-tracker' ) . '</p>';
+				echo '<p>' . esc_html__( 'Configure your AI provider and the changelog pages to monitor.', 'changescout' ) . '</p>';
 			},
 			'aics-general'
 		);
 
 		add_settings_section(
 			'aics_notifications_section',
-			esc_html__( 'Email Settings', 'changelog-tracker' ),
+			esc_html__( 'Email Settings', 'changescout' ),
 			function () {
-				echo '<p>' . esc_html__( 'Set up notification email, sender details, and delivery schedule.', 'changelog-tracker' ) . '</p>';
+				echo '<p>' . esc_html__( 'Set up notification email, sender details, and delivery schedule.', 'changescout' ) . '</p>';
 			},
 			'aics-notifications'
 		);
 
 		add_settings_section(
 			'aics_smtp_section',
-			esc_html__( 'SMTP Configuration', 'changelog-tracker' ),
+			esc_html__( 'SMTP Configuration', 'changescout' ),
 			function () {
-				echo '<p>' . esc_html__( 'Configure a custom SMTP server to ensure emails are delivered to real inboxes. Required on local environments or when WordPress default mail fails.', 'changelog-tracker' ) . '</p>';
+				echo '<p>' . esc_html__( 'Configure a custom SMTP server to ensure emails are delivered to real inboxes. Required on local environments or when WordPress default mail fails.', 'changescout' ) . '</p>';
 			},
 			'aics-notifications'
 		);
@@ -276,26 +276,26 @@ class AIChangelogSummary {
 
 	private function add_settings_fields() {
 		/* ── General fields ── */
-		add_settings_field( 'aics_ai_provider', esc_html__( 'AI Provider', 'changelog-tracker' ), [ $this, 'render_provider_field' ], 'aics-general', 'aics_general_section' );
-		add_settings_field( 'aics_api_keys', esc_html__( 'API Key', 'changelog-tracker' ), [ $this, 'render_api_key_fields' ], 'aics-general', 'aics_general_section' );
-		add_settings_field( 'aics_max_tokens', esc_html__( 'Max Output Tokens', 'changelog-tracker' ), [ $this, 'render_max_tokens_field' ], 'aics-general', 'aics_general_section' );
-		add_settings_field( 'changelog_urls', esc_html__( 'Changelog URLs', 'changelog-tracker' ), [ $this, 'render_urls_field' ], 'aics-general', 'aics_general_section' );
+		add_settings_field( 'aics_ai_provider', esc_html__( 'AI Provider', 'changescout' ), [ $this, 'render_provider_field' ], 'aics-general', 'aics_general_section' );
+		add_settings_field( 'aics_api_keys', esc_html__( 'API Key', 'changescout' ), [ $this, 'render_api_key_fields' ], 'aics-general', 'aics_general_section' );
+		add_settings_field( 'aics_max_tokens', esc_html__( 'Max Output Tokens', 'changescout' ), [ $this, 'render_max_tokens_field' ], 'aics-general', 'aics_general_section' );
+		add_settings_field( 'aics_changelog_urls', esc_html__( 'Changelog URLs', 'changescout' ), [ $this, 'render_urls_field' ], 'aics-general', 'aics_general_section' );
 
 		/* ── Notification fields ── */
-		add_settings_field( 'notification_email', esc_html__( 'Notification Email', 'changelog-tracker' ), [ $this, 'render_email_field' ], 'aics-notifications', 'aics_notifications_section' );
-		add_settings_field( 'aics_email_from_name', esc_html__( 'From Name', 'changelog-tracker' ), [ $this, 'render_from_name_field' ], 'aics-notifications', 'aics_notifications_section' );
-		add_settings_field( 'aics_email_from_address', esc_html__( 'From Email', 'changelog-tracker' ), [ $this, 'render_from_address_field' ], 'aics-notifications', 'aics_notifications_section' );
-		add_settings_field( 'aics_frequency', esc_html__( 'Email Frequency', 'changelog-tracker' ), [ $this, 'render_frequency_field' ], 'aics-notifications', 'aics_notifications_section' );
-		add_settings_field( 'aics_day', esc_html__( 'Send Day', 'changelog-tracker' ), [ $this, 'render_day_field' ], 'aics-notifications', 'aics_notifications_section' );
-		add_settings_field( 'aics_time', esc_html__( 'Send Time', 'changelog-tracker' ), [ $this, 'render_time_field' ], 'aics-notifications', 'aics_notifications_section' );
+		add_settings_field( 'aics_notification_email', esc_html__( 'Notification Email', 'changescout' ), [ $this, 'render_email_field' ], 'aics-notifications', 'aics_notifications_section' );
+		add_settings_field( 'aics_email_from_name', esc_html__( 'From Name', 'changescout' ), [ $this, 'render_from_name_field' ], 'aics-notifications', 'aics_notifications_section' );
+		add_settings_field( 'aics_email_from_address', esc_html__( 'From Email', 'changescout' ), [ $this, 'render_from_address_field' ], 'aics-notifications', 'aics_notifications_section' );
+		add_settings_field( 'aics_frequency', esc_html__( 'Email Frequency', 'changescout' ), [ $this, 'render_frequency_field' ], 'aics-notifications', 'aics_notifications_section' );
+		add_settings_field( 'aics_day', esc_html__( 'Send Day', 'changescout' ), [ $this, 'render_day_field' ], 'aics-notifications', 'aics_notifications_section' );
+		add_settings_field( 'aics_time', esc_html__( 'Send Time', 'changescout' ), [ $this, 'render_time_field' ], 'aics-notifications', 'aics_notifications_section' );
 
 		/* ── SMTP fields ── */
-		add_settings_field( 'aics_smtp_enabled', esc_html__( 'Enable SMTP', 'changelog-tracker' ), [ $this, 'render_smtp_enabled_field' ], 'aics-notifications', 'aics_smtp_section' );
-		add_settings_field( 'aics_smtp_host', esc_html__( 'SMTP Host', 'changelog-tracker' ), [ $this, 'render_smtp_host_field' ], 'aics-notifications', 'aics_smtp_section' );
-		add_settings_field( 'aics_smtp_port', esc_html__( 'SMTP Port', 'changelog-tracker' ), [ $this, 'render_smtp_port_field' ], 'aics-notifications', 'aics_smtp_section' );
-		add_settings_field( 'aics_smtp_encryption', esc_html__( 'Encryption', 'changelog-tracker' ), [ $this, 'render_smtp_encryption_field' ], 'aics-notifications', 'aics_smtp_section' );
-		add_settings_field( 'aics_smtp_username', esc_html__( 'Username', 'changelog-tracker' ), [ $this, 'render_smtp_username_field' ], 'aics-notifications', 'aics_smtp_section' );
-		add_settings_field( 'aics_smtp_password', esc_html__( 'Password', 'changelog-tracker' ), [ $this, 'render_smtp_password_field' ], 'aics-notifications', 'aics_smtp_section' );
+		add_settings_field( 'aics_smtp_enabled', esc_html__( 'Enable SMTP', 'changescout' ), [ $this, 'render_smtp_enabled_field' ], 'aics-notifications', 'aics_smtp_section' );
+		add_settings_field( 'aics_smtp_host', esc_html__( 'SMTP Host', 'changescout' ), [ $this, 'render_smtp_host_field' ], 'aics-notifications', 'aics_smtp_section' );
+		add_settings_field( 'aics_smtp_port', esc_html__( 'SMTP Port', 'changescout' ), [ $this, 'render_smtp_port_field' ], 'aics-notifications', 'aics_smtp_section' );
+		add_settings_field( 'aics_smtp_encryption', esc_html__( 'Encryption', 'changescout' ), [ $this, 'render_smtp_encryption_field' ], 'aics-notifications', 'aics_smtp_section' );
+		add_settings_field( 'aics_smtp_username', esc_html__( 'Username', 'changescout' ), [ $this, 'render_smtp_username_field' ], 'aics-notifications', 'aics_smtp_section' );
+		add_settings_field( 'aics_smtp_password', esc_html__( 'Password', 'changescout' ), [ $this, 'render_smtp_password_field' ], 'aics-notifications', 'aics_smtp_section' );
 	}
 
 	/* ───────────────────────── Field Renderers ───────────────── */
@@ -315,9 +315,9 @@ class AIChangelogSummary {
 	public function render_api_key_fields() {
 		$current = get_option( 'aics_ai_provider', 'gemini' );
 		$keys    = [
-			'gemini' => [ 'option' => 'gemini_api_key', 'label' => __( 'Gemini API Key', 'changelog-tracker' ), 'link' => 'https://aistudio.google.com/app/apikey' ],
-			'openai' => [ 'option' => 'openai_api_key', 'label' => __( 'OpenAI API Key', 'changelog-tracker' ), 'link' => 'https://platform.openai.com/api-keys' ],
-			'claude' => [ 'option' => 'claude_api_key', 'label' => __( 'Claude API Key', 'changelog-tracker' ), 'link' => 'https://console.anthropic.com/settings/keys' ],
+			'gemini' => [ 'option' => 'aics_gemini_api_key', 'label' => __( 'Gemini API Key', 'changescout' ), 'link' => 'https://aistudio.google.com/app/apikey' ],
+			'openai' => [ 'option' => 'aics_openai_api_key', 'label' => __( 'OpenAI API Key', 'changescout' ), 'link' => 'https://platform.openai.com/api-keys' ],
+			'claude' => [ 'option' => 'aics_claude_api_key', 'label' => __( 'Claude API Key', 'changescout' ), 'link' => 'https://console.anthropic.com/settings/keys' ],
 		];
 		foreach ( $keys as $provider => $meta ) :
 			$value   = get_option( $meta['option'], '' );
@@ -333,13 +333,13 @@ class AIChangelogSummary {
 						placeholder="<?php echo esc_attr( $meta['label'] ); ?>"
 						autocomplete="new-password"
 					>
-					<button type="button" class="aics-pw-toggle" aria-label="<?php esc_attr_e( 'Toggle visibility', 'changelog-tracker' ); ?>">
+					<button type="button" class="aics-pw-toggle" aria-label="<?php esc_attr_e( 'Toggle visibility', 'changescout' ); ?>">
 						<svg class="aics-eye-show" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20" fill="currentColor"><path d="M10 3C5 3 1.73 7.11 1.05 9.77a1 1 0 0 0 0 .46C1.73 12.89 5 17 10 17s8.27-4.11 8.95-6.77a1 1 0 0 0 0-.46C18.27 7.11 15 3 10 3zm0 11a4 4 0 1 1 0-8 4 4 0 0 1 0 8zm0-6a2 2 0 1 0 0 4 2 2 0 0 0 0-4z"/></svg>
 						<svg class="aics-eye-hide" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20" fill="currentColor" style="display:none"><path d="M2.22 2.22a.75.75 0 0 0-1.06 1.06l1.55 1.55C1.3 6.13.42 7.96.05 9.77a1 1 0 0 0 0 .46C.73 12.89 4 17 9 17c1.5 0 2.9-.4 4.1-1.07l2.68 2.68a.75.75 0 1 0 1.06-1.06L2.22 2.22zM9 13a3 3 0 0 1-2.83-4l4.83 4.83A3 3 0 0 1 9 13zm1-9c4.43 0 7.5 3.64 8.27 6.23a1 1 0 0 1 0 .54c-.35 1.3-1.1 2.75-2.24 3.94L5.3 3A8.6 8.6 0 0 1 10 4z"/></svg>
 					</button>
 				</span>
 				<a href="<?php echo esc_url( $meta['link'] ); ?>" target="_blank" rel="noopener noreferrer">
-					<?php esc_html_e( 'Get key', 'changelog-tracker' ); ?> &rarr;
+					<?php esc_html_e( 'Get key', 'changescout' ); ?> &rarr;
 				</a>
 			</div>
 		<?php endforeach;
@@ -352,12 +352,12 @@ class AIChangelogSummary {
 		}
 		?>
 		<input type="number" name="aics_max_tokens" value="<?php echo esc_attr( $value ); ?>" min="512" max="8192" step="256" class="regular-text" style="max-width:200px;">
-		<p class="description"><?php esc_html_e( 'Maximum tokens for AI response. Increase if summaries are getting cut off. Default: 2048.', 'changelog-tracker' ); ?></p>
+		<p class="description"><?php esc_html_e( 'Maximum tokens for AI response. Increase if summaries are getting cut off. Default: 2048.', 'changescout' ); ?></p>
 		<?php
 	}
 
 	public function render_urls_field() {
-		$urls = array_pad( array_slice( (array) get_option( 'changelog_urls', [] ), 0, $this->max_url_count ), $this->default_url_count, '' );
+		$urls = array_pad( array_slice( (array) get_option( 'aics_changelog_urls', [] ), 0, $this->max_url_count ), $this->default_url_count, '' );
 		?>
 		<div id="changelog-urls-container">
 			<?php for ( $i = 0; $i < $this->default_url_count; $i++ ) : ?>
@@ -368,27 +368,27 @@ class AIChangelogSummary {
 						value="<?php echo esc_attr( $urls[ $i ] ); ?>"
 						class="regular-text"
 						<?php /* translators: %d: URL number */ ?>
-						placeholder="<?php echo esc_attr( sprintf( __( 'Changelog URL #%d', 'changelog-tracker' ), $i + 1 ) ); ?>"
+						placeholder="<?php echo esc_attr( sprintf( __( 'Changelog URL #%d', 'changescout' ), $i + 1 ) ); ?>"
 					>
 				</div>
 			<?php endfor; ?>
 		</div>
 		<div style="display:flex;align-items:center;gap:8px;margin-top:8px;">
-			<input type="url" id="aics-detect-domain" class="regular-text" placeholder="<?php esc_attr_e( 'Enter domain to auto-detect changelog URL', 'changelog-tracker' ); ?>" style="max-width:300px;">
+			<input type="url" id="aics-detect-domain" class="regular-text" placeholder="<?php esc_attr_e( 'Enter domain to auto-detect changelog URL', 'changescout' ); ?>" style="max-width:300px;">
 			<button type="button" id="aics-detect-url" class="button button-secondary">
-				<?php esc_html_e( 'Auto Detect', 'changelog-tracker' ); ?>
+				<?php esc_html_e( 'Auto Detect', 'changescout' ); ?>
 			</button>
 			<span id="aics-detect-result" style="font-size:13px;"></span>
 		</div>
-		<p class="description"><?php esc_html_e( 'Enter up to 4 changelog URLs, or use Auto Detect to find them automatically.', 'changelog-tracker' ); ?></p>
+		<p class="description"><?php esc_html_e( 'Enter up to 4 changelog URLs, or use Auto Detect to find them automatically.', 'changescout' ); ?></p>
 		<?php
 	}
 
 	public function render_email_field() {
-		$email = get_option( 'notification_email', get_option( 'admin_email' ) );
+		$email = get_option( 'aics_notification_email', get_option( 'admin_email' ) );
 		?>
-		<input type="email" name="notification_email" value="<?php echo esc_attr( $email ); ?>" class="regular-text" placeholder="<?php esc_attr_e( 'Email for notifications', 'changelog-tracker' ); ?>">
-		<p class="description"><?php esc_html_e( 'The email address that receives changelog notifications.', 'changelog-tracker' ); ?></p>
+		<input type="email" name="notification_email" value="<?php echo esc_attr( $email ); ?>" class="regular-text" placeholder="<?php esc_attr_e( 'Email for notifications', 'changescout' ); ?>">
+		<p class="description"><?php esc_html_e( 'The email address that receives changelog notifications.', 'changescout' ); ?></p>
 		<?php
 	}
 
@@ -396,7 +396,7 @@ class AIChangelogSummary {
 		$value = get_option( 'aics_email_from_name', '' );
 		?>
 		<input type="text" name="aics_email_from_name" value="<?php echo esc_attr( $value ); ?>" class="regular-text" placeholder="<?php echo esc_attr( get_bloginfo( 'name' ) ); ?>">
-		<p class="description"><?php esc_html_e( 'Sender name for emails. Leave empty to use your site name.', 'changelog-tracker' ); ?></p>
+		<p class="description"><?php esc_html_e( 'Sender name for emails. Leave empty to use your site name.', 'changescout' ); ?></p>
 		<?php
 	}
 
@@ -405,9 +405,9 @@ class AIChangelogSummary {
 		?>
 		<input type="email" name="aics_email_from_address" id="aics_email_from_address" value="<?php echo esc_attr( $value ); ?>" class="regular-text" placeholder="<?php echo esc_attr( get_option( 'admin_email' ) ); ?>">
 		<p class="description">
-			<?php esc_html_e( 'Sender email address. Leave empty to use WordPress default.', 'changelog-tracker' ); ?>
+			<?php esc_html_e( 'Sender email address. Leave empty to use WordPress default.', 'changescout' ); ?>
 			<strong id="aics-from-smtp-notice" style="color:#b91c1c;display:none;">
-				<?php esc_html_e( 'When using SMTP, this must match your SMTP username or the email will be rejected.', 'changelog-tracker' ); ?>
+				<?php esc_html_e( 'When using SMTP, this must match your SMTP username or the email will be rejected.', 'changescout' ); ?>
 			</strong>
 		</p>
 		<?php
@@ -418,9 +418,9 @@ class AIChangelogSummary {
 		?>
 		<label>
 			<input type="checkbox" name="aics_smtp_enabled" id="aics-smtp-enabled" value="1" <?php checked( 1, $enabled ); ?>>
-			<?php esc_html_e( 'Use custom SMTP server for sending emails', 'changelog-tracker' ); ?>
+			<?php esc_html_e( 'Use custom SMTP server for sending emails', 'changescout' ); ?>
 		</label>
-		<p class="description"><?php esc_html_e( 'Enable this if emails are not arriving (e.g. on local environments). WordPress default mail uses PHP mail() which is often blocked.', 'changelog-tracker' ); ?></p>
+		<p class="description"><?php esc_html_e( 'Enable this if emails are not arriving (e.g. on local environments). WordPress default mail uses PHP mail() which is often blocked.', 'changescout' ); ?></p>
 		<?php
 	}
 
@@ -428,7 +428,7 @@ class AIChangelogSummary {
 		$value = get_option( 'aics_smtp_host', '' );
 		?>
 		<input type="text" name="aics_smtp_host" value="<?php echo esc_attr( $value ); ?>" class="regular-text" placeholder="smtp.gmail.com">
-		<p class="description"><?php esc_html_e( 'Your SMTP server hostname. e.g. smtp.gmail.com, smtp.mailgun.org, smtp.sendgrid.net', 'changelog-tracker' ); ?></p>
+		<p class="description"><?php esc_html_e( 'Your SMTP server hostname. e.g. smtp.gmail.com, smtp.mailgun.org, smtp.sendgrid.net', 'changescout' ); ?></p>
 		<?php
 	}
 
@@ -436,16 +436,16 @@ class AIChangelogSummary {
 		$value = (int) get_option( 'aics_smtp_port', 587 );
 		?>
 		<input type="number" name="aics_smtp_port" value="<?php echo esc_attr( $value ); ?>" min="1" max="65535" class="small-text">
-		<p class="description"><?php esc_html_e( 'Common ports: 587 (TLS), 465 (SSL), 25 (none).', 'changelog-tracker' ); ?></p>
+		<p class="description"><?php esc_html_e( 'Common ports: 587 (TLS), 465 (SSL), 25 (none).', 'changescout' ); ?></p>
 		<?php
 	}
 
 	public function render_smtp_encryption_field() {
 		$current = get_option( 'aics_smtp_encryption', 'tls' );
 		$options = [
-			'tls'  => __( 'TLS (recommended)', 'changelog-tracker' ),
-			'ssl'  => __( 'SSL', 'changelog-tracker' ),
-			'none' => __( 'None', 'changelog-tracker' ),
+			'tls'  => __( 'TLS (recommended)', 'changescout' ),
+			'ssl'  => __( 'SSL', 'changescout' ),
+			'none' => __( 'None', 'changescout' ),
 		];
 		?>
 		<select name="aics_smtp_encryption">
@@ -459,7 +459,7 @@ class AIChangelogSummary {
 	public function render_smtp_username_field() {
 		$value = get_option( 'aics_smtp_username', '' );
 		?>
-		<input type="text" name="aics_smtp_username" id="aics_smtp_username" value="<?php echo esc_attr( $value ); ?>" class="regular-text" autocomplete="off" placeholder="<?php esc_attr_e( 'your@email.com', 'changelog-tracker' ); ?>">
+		<input type="text" name="aics_smtp_username" id="aics_smtp_username" value="<?php echo esc_attr( $value ); ?>" class="regular-text" autocomplete="off" placeholder="<?php esc_attr_e( 'your@email.com', 'changescout' ); ?>">
 		<?php
 	}
 
@@ -468,21 +468,21 @@ class AIChangelogSummary {
 		?>
 		<span class="aics-pw-wrap">
 			<input type="password" name="aics_smtp_password" id="aics_smtp_password" value="<?php echo esc_attr( $value ); ?>" class="regular-text" autocomplete="new-password">
-			<button type="button" class="aics-pw-toggle" aria-label="<?php esc_attr_e( 'Toggle visibility', 'changelog-tracker' ); ?>">
+			<button type="button" class="aics-pw-toggle" aria-label="<?php esc_attr_e( 'Toggle visibility', 'changescout' ); ?>">
 				<svg class="aics-eye-show" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20" fill="currentColor"><path d="M10 3C5 3 1.73 7.11 1.05 9.77a1 1 0 0 0 0 .46C1.73 12.89 5 17 10 17s8.27-4.11 8.95-6.77a1 1 0 0 0 0-.46C18.27 7.11 15 3 10 3zm0 11a4 4 0 1 1 0-8 4 4 0 0 1 0 8zm0-6a2 2 0 1 0 0 4 2 2 0 0 0 0-4z"/></svg>
 				<svg class="aics-eye-hide" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20" fill="currentColor" style="display:none"><path d="M2.22 2.22a.75.75 0 0 0-1.06 1.06l1.55 1.55C1.3 6.13.42 7.96.05 9.77a1 1 0 0 0 0 .46C.73 12.89 4 17 9 17c1.5 0 2.9-.4 4.1-1.07l2.68 2.68a.75.75 0 1 0 1.06-1.06L2.22 2.22zM9 13a3 3 0 0 1-2.83-4l4.83 4.83A3 3 0 0 1 9 13zm1-9c4.43 0 7.5 3.64 8.27 6.23a1 1 0 0 1 0 .54c-.35 1.3-1.1 2.75-2.24 3.94L5.3 3A8.6 8.6 0 0 1 10 4z"/></svg>
 			</button>
 		</span>
-		<p class="description"><?php esc_html_e( 'For Gmail, use an App Password (not your account password). Two-factor authentication must be enabled.', 'changelog-tracker' ); ?></p>
+		<p class="description"><?php esc_html_e( 'For Gmail, use an App Password (not your account password). Two-factor authentication must be enabled.', 'changescout' ); ?></p>
 		<?php
 	}
 
 	public function render_frequency_field() {
 		$current = get_option( 'aics_email_frequency', 'weekly' );
 		$options = apply_filters( 'aics_frequency_options', [
-			'weekly'   => __( 'Weekly', 'changelog-tracker' ),
-			'biweekly' => __( 'Every Two Weeks', 'changelog-tracker' ),
-			'monthly'  => __( 'Monthly', 'changelog-tracker' ),
+			'weekly'   => __( 'Weekly', 'changescout' ),
+			'biweekly' => __( 'Every Two Weeks', 'changescout' ),
+			'monthly'  => __( 'Monthly', 'changescout' ),
 		] );
 		?>
 		<select name="aics_email_frequency" id="aics-frequency">
@@ -502,7 +502,7 @@ class AIChangelogSummary {
 				<option value="<?php echo esc_attr( $d ); ?>" <?php selected( $current, $d ); ?>><?php echo esc_html( ucfirst( $d ) ); ?></option>
 			<?php endforeach; ?>
 		</select>
-		<p class="description aics-day-note"><?php esc_html_e( 'Day of the week to send the email.', 'changelog-tracker' ); ?></p>
+		<p class="description aics-day-note"><?php esc_html_e( 'Day of the week to send the email.', 'changescout' ); ?></p>
 		<?php
 	}
 
@@ -519,7 +519,7 @@ class AIChangelogSummary {
 		</select>
 		<?php
 		/* translators: %s: WordPress timezone string */
-		$tz_note = sprintf( __( 'Time in your WordPress timezone (%s).', 'changelog-tracker' ), wp_timezone_string() );
+		$tz_note = sprintf( __( 'Time in your WordPress timezone (%s).', 'changescout' ), wp_timezone_string() );
 		?>
 		<p class="description"><?php echo esc_html( $tz_note ); ?></p>
 		<?php
@@ -548,9 +548,9 @@ class AIChangelogSummary {
 			<h1><?php echo esc_html( get_admin_page_title() ); ?></h1>
 
 			<nav class="aics-tabs" role="tablist">
-				<a class="aics-tab active" data-tab="general" href="#general" role="tab" aria-selected="true"><?php esc_html_e( 'General', 'changelog-tracker' ); ?></a>
-				<a class="aics-tab" data-tab="notifications" href="#notifications" role="tab" aria-selected="false"><?php esc_html_e( 'Notifications', 'changelog-tracker' ); ?></a>
-				<a class="aics-tab" data-tab="help" href="#help" role="tab" aria-selected="false"><?php esc_html_e( 'Help', 'changelog-tracker' ); ?></a>
+				<a class="aics-tab active" data-tab="general" href="#general" role="tab" aria-selected="true"><?php esc_html_e( 'General', 'changescout' ); ?></a>
+				<a class="aics-tab" data-tab="notifications" href="#notifications" role="tab" aria-selected="false"><?php esc_html_e( 'Notifications', 'changescout' ); ?></a>
+				<a class="aics-tab" data-tab="help" href="#help" role="tab" aria-selected="false"><?php esc_html_e( 'Help', 'changescout' ); ?></a>
 			</nav>
 
 			<!-- ============ General Tab ============ -->
@@ -559,52 +559,52 @@ class AIChangelogSummary {
 					<?php
 					settings_fields( $this->general_group );
 					do_settings_sections( 'aics-general' );
-					submit_button( esc_html__( 'Save Settings', 'changelog-tracker' ) );
+					submit_button( esc_html__( 'Save Settings', 'changescout' ) );
 					?>
 				</form>
 
 				<div class="aics-card">
-					<h2><?php esc_html_e( 'Actions', 'changelog-tracker' ); ?></h2>
+					<h2><?php esc_html_e( 'Actions', 'changescout' ); ?></h2>
 					<div style="margin-top:12px;">
 						<div class="aics-actions-group">
-							<button id="preview-changelog" class="button button-primary"><?php esc_html_e( 'Preview Changelog', 'changelog-tracker' ); ?></button>
-							<button id="preview-fresh" class="button"><?php esc_html_e( 'Fetch Latest', 'changelog-tracker' ); ?></button>
+							<button id="preview-changelog" class="button button-primary"><?php esc_html_e( 'Preview Changelog', 'changescout' ); ?></button>
+							<button id="preview-fresh" class="button"><?php esc_html_e( 'Fetch Latest', 'changescout' ); ?></button>
 						</div>
 						<p class="description">
 							<?php
 							printf(
 								/* translators: %s: "Fetch Latest" button label */
-								esc_html__( 'Preview uses cached data (30 min). %s bypasses cache.', 'changelog-tracker' ),
-								'<strong>' . esc_html__( 'Fetch Latest', 'changelog-tracker' ) . '</strong>'
+								esc_html__( 'Preview uses cached data (30 min). %s bypasses cache.', 'changescout' ),
+								'<strong>' . esc_html__( 'Fetch Latest', 'changescout' ) . '</strong>'
 							);
 							?>
 						</p>
 					</div>
 					<div style="margin-top:16px;">
 						<div class="aics-actions-group">
-							<button id="force-fetch" class="button button-primary"><?php esc_html_e( 'Fetch & Email Now', 'changelog-tracker' ); ?></button>
+							<button id="force-fetch" class="button button-primary"><?php esc_html_e( 'Fetch & Email Now', 'changescout' ); ?></button>
 							<label>
 								<input type="checkbox" id="force-fetch-ignore-diff" value="1">
-								<?php esc_html_e( 'Send even if no changes detected', 'changelog-tracker' ); ?>
+								<?php esc_html_e( 'Send even if no changes detected', 'changescout' ); ?>
 							</label>
 						</div>
 						<span id="force-fetch-result" style="margin-left:10px;"></span>
 						<p class="description">
-							<?php esc_html_e( 'Force-fetch all changelogs and send email immediately.', 'changelog-tracker' ); ?>
-							<strong><?php esc_html_e( 'This will not affect your scheduled emails', 'changelog-tracker' ); ?></strong> — <?php esc_html_e( 'it is for testing only and does not update the change tracking used by the scheduler.', 'changelog-tracker' ); ?>
+							<?php esc_html_e( 'Force-fetch all changelogs and send email immediately.', 'changescout' ); ?>
+							<strong><?php esc_html_e( 'This will not affect your scheduled emails', 'changescout' ); ?></strong> — <?php esc_html_e( 'it is for testing only and does not update the change tracking used by the scheduler.', 'changescout' ); ?>
 						</p>
 					</div>
 					<div style="margin-top:16px;">
 						<div class="aics-actions-group">
-							<button id="test-wpmail" class="button"><?php esc_html_e( 'Test Email Delivery', 'changelog-tracker' ); ?></button>
+							<button id="test-wpmail" class="button"><?php esc_html_e( 'Test Email Delivery', 'changescout' ); ?></button>
 							<span id="wpmail-test-result"></span>
 						</div>
-						<p class="description"><?php esc_html_e( 'Sends a test email to your notification address to verify WordPress mail is working.', 'changelog-tracker' ); ?></p>
+						<p class="description"><?php esc_html_e( 'Sends a test email to your notification address to verify WordPress mail is working.', 'changescout' ); ?></p>
 					</div>
 				</div>
 
 				<div class="aics-card">
-					<h2><?php esc_html_e( 'Changelog Preview', 'changelog-tracker' ); ?></h2>
+					<h2><?php esc_html_e( 'Changelog Preview', 'changescout' ); ?></h2>
 					<div id="changelog-preview"></div>
 				</div>
 			</div>
@@ -615,79 +615,79 @@ class AIChangelogSummary {
 					<?php settings_fields( $this->notifications_group ); ?>
 
 					<div class="aics-card">
-						<h2><?php esc_html_e( 'Email Settings', 'changelog-tracker' ); ?></h2>
+						<h2><?php esc_html_e( 'Email Settings', 'changescout' ); ?></h2>
 						<table class="form-table" role="presentation">
 							<tr>
-								<th scope="row"><label for="notification_email"><?php esc_html_e( 'To (Recipient Email)', 'changelog-tracker' ); ?></label></th>
+								<th scope="row"><label for="notification_email"><?php esc_html_e( 'To (Recipient Email)', 'changescout' ); ?></label></th>
 								<td><?php $this->render_email_field(); ?></td>
 							</tr>
 							<tr>
-								<th scope="row"><label for="aics_email_from_name"><?php esc_html_e( 'From Name', 'changelog-tracker' ); ?></label></th>
+								<th scope="row"><label for="aics_email_from_name"><?php esc_html_e( 'From Name', 'changescout' ); ?></label></th>
 								<td><?php $this->render_from_name_field(); ?></td>
 							</tr>
 							<tr>
-								<th scope="row"><label for="aics_email_from_address"><?php esc_html_e( 'From Email', 'changelog-tracker' ); ?></label></th>
+								<th scope="row"><label for="aics_email_from_address"><?php esc_html_e( 'From Email', 'changescout' ); ?></label></th>
 								<td><?php $this->render_from_address_field(); ?></td>
 							</tr>
 							<tr>
-								<th scope="row"><label for="aics-frequency"><?php esc_html_e( 'Email Frequency', 'changelog-tracker' ); ?></label></th>
+								<th scope="row"><label for="aics-frequency"><?php esc_html_e( 'Email Frequency', 'changescout' ); ?></label></th>
 								<td><?php $this->render_frequency_field(); ?></td>
 							</tr>
 							<tr>
-								<th scope="row"><label for="aics-day"><?php esc_html_e( 'Send Day', 'changelog-tracker' ); ?></label></th>
+								<th scope="row"><label for="aics-day"><?php esc_html_e( 'Send Day', 'changescout' ); ?></label></th>
 								<td><?php $this->render_day_field(); ?></td>
 							</tr>
 							<tr>
-								<th scope="row"><label for="aics-time"><?php esc_html_e( 'Send Time', 'changelog-tracker' ); ?></label></th>
+								<th scope="row"><label for="aics-time"><?php esc_html_e( 'Send Time', 'changescout' ); ?></label></th>
 								<td><?php $this->render_time_field(); ?></td>
 							</tr>
 						</table>
 					</div>
 
 					<div class="aics-card">
-						<h2><?php esc_html_e( 'SMTP Configuration', 'changelog-tracker' ); ?></h2>
-						<p><?php esc_html_e( 'Configure a custom SMTP server to ensure emails are delivered. Required on local environments or when WordPress default mail fails.', 'changelog-tracker' ); ?></p>
+						<h2><?php esc_html_e( 'SMTP Configuration', 'changescout' ); ?></h2>
+						<p><?php esc_html_e( 'Configure a custom SMTP server to ensure emails are delivered. Required on local environments or when WordPress default mail fails.', 'changescout' ); ?></p>
 						<table class="form-table" role="presentation">
 							<tr>
-								<th scope="row"><?php esc_html_e( 'Enable SMTP', 'changelog-tracker' ); ?></th>
+								<th scope="row"><?php esc_html_e( 'Enable SMTP', 'changescout' ); ?></th>
 								<td><?php $this->render_smtp_enabled_field(); ?></td>
 							</tr>
 							<tr>
-								<th scope="row"><label for="aics_smtp_host"><?php esc_html_e( 'SMTP Host', 'changelog-tracker' ); ?></label></th>
+								<th scope="row"><label for="aics_smtp_host"><?php esc_html_e( 'SMTP Host', 'changescout' ); ?></label></th>
 								<td><?php $this->render_smtp_host_field(); ?></td>
 							</tr>
 							<tr>
-								<th scope="row"><label for="aics_smtp_port"><?php esc_html_e( 'SMTP Port', 'changelog-tracker' ); ?></label></th>
+								<th scope="row"><label for="aics_smtp_port"><?php esc_html_e( 'SMTP Port', 'changescout' ); ?></label></th>
 								<td><?php $this->render_smtp_port_field(); ?></td>
 							</tr>
 							<tr>
-								<th scope="row"><label for="aics_smtp_encryption"><?php esc_html_e( 'Encryption', 'changelog-tracker' ); ?></label></th>
+								<th scope="row"><label for="aics_smtp_encryption"><?php esc_html_e( 'Encryption', 'changescout' ); ?></label></th>
 								<td><?php $this->render_smtp_encryption_field(); ?></td>
 							</tr>
 							<tr>
-								<th scope="row"><label for="aics_smtp_username"><?php esc_html_e( 'Username', 'changelog-tracker' ); ?></label></th>
+								<th scope="row"><label for="aics_smtp_username"><?php esc_html_e( 'Username', 'changescout' ); ?></label></th>
 								<td><?php $this->render_smtp_username_field(); ?></td>
 							</tr>
 							<tr>
-								<th scope="row"><label for="aics_smtp_password"><?php esc_html_e( 'Password', 'changelog-tracker' ); ?></label></th>
+								<th scope="row"><label for="aics_smtp_password"><?php esc_html_e( 'Password', 'changescout' ); ?></label></th>
 								<td><?php $this->render_smtp_password_field(); ?></td>
 							</tr>
 						</table>
 					</div>
 
-					<?php submit_button( esc_html__( 'Save Settings', 'changelog-tracker' ) ); ?>
+					<?php submit_button( esc_html__( 'Save Settings', 'changescout' ) ); ?>
 				</form>
 
 				<div class="aics-card">
-					<h2><?php esc_html_e( 'Schedule', 'changelog-tracker' ); ?></h2>
+					<h2><?php esc_html_e( 'Schedule', 'changescout' ); ?></h2>
 					<p>
-						<strong><?php esc_html_e( 'Frequency:', 'changelog-tracker' ); ?></strong> <?php echo esc_html( ucfirst( $freq ) ); ?><br>
-						<strong><?php esc_html_e( 'Next email:', 'changelog-tracker' ); ?></strong>
+						<strong><?php esc_html_e( 'Frequency:', 'changescout' ); ?></strong> <?php echo esc_html( ucfirst( $freq ) ); ?><br>
+						<strong><?php esc_html_e( 'Next email:', 'changescout' ); ?></strong>
 						<?php
 						if ( $next_run ) {
 							echo esc_html( wp_date( 'l, F j, Y \a\t g:i A', $next_run ) );
 						} else {
-							esc_html_e( 'Not scheduled', 'changelog-tracker' );
+							esc_html_e( 'Not scheduled', 'changescout' );
 						}
 						?>
 					</p>
@@ -697,28 +697,28 @@ class AIChangelogSummary {
 			<!-- ============ Help Tab ============ -->
 			<div class="aics-tab-content" id="aics-tab-help" role="tabpanel">
 				<div class="aics-card aics-help-section">
-					<h2><?php esc_html_e( 'Documentation', 'changelog-tracker' ); ?></h2>
-					<h4><?php esc_html_e( 'Setup Instructions', 'changelog-tracker' ); ?></h4>
+					<h2><?php esc_html_e( 'Documentation', 'changescout' ); ?></h2>
+					<h4><?php esc_html_e( 'Setup Instructions', 'changescout' ); ?></h4>
 					<ol>
-						<li><?php esc_html_e( 'Select your AI provider and enter the API key.', 'changelog-tracker' ); ?></li>
-						<li><?php esc_html_e( 'Enter the changelog URLs you want to monitor.', 'changelog-tracker' ); ?></li>
-						<li><?php esc_html_e( 'Configure the notification email address.', 'changelog-tracker' ); ?></li>
-						<li><?php esc_html_e( 'Set your preferred email schedule.', 'changelog-tracker' ); ?></li>
-						<li><?php esc_html_e( 'Use the test buttons to verify your setup.', 'changelog-tracker' ); ?></li>
+						<li><?php esc_html_e( 'Select your AI provider and enter the API key.', 'changescout' ); ?></li>
+						<li><?php esc_html_e( 'Enter the changelog URLs you want to monitor.', 'changescout' ); ?></li>
+						<li><?php esc_html_e( 'Configure the notification email address.', 'changescout' ); ?></li>
+						<li><?php esc_html_e( 'Set your preferred email schedule.', 'changescout' ); ?></li>
+						<li><?php esc_html_e( 'Use the test buttons to verify your setup.', 'changescout' ); ?></li>
 					</ol>
-					<h4><?php esc_html_e( 'Change Detection', 'changelog-tracker' ); ?></h4>
-					<p><?php esc_html_e( 'The plugin stores a fingerprint of each changelog. Scheduled emails are only sent when changes are detected. Use "Fetch & Email Now" to force an email regardless.', 'changelog-tracker' ); ?></p>
-					<h4><?php esc_html_e( 'External Services', 'changelog-tracker' ); ?></h4>
-					<p><?php esc_html_e( 'This plugin connects to the following external services:', 'changelog-tracker' ); ?></p>
+					<h4><?php esc_html_e( 'Change Detection', 'changescout' ); ?></h4>
+					<p><?php esc_html_e( 'The plugin stores a fingerprint of each changelog. Scheduled emails are only sent when changes are detected. Use "Fetch & Email Now" to force an email regardless.', 'changescout' ); ?></p>
+					<h4><?php esc_html_e( 'External Services', 'changescout' ); ?></h4>
+					<p><?php esc_html_e( 'This plugin connects to the following external services:', 'changescout' ); ?></p>
 					<ul>
-						<li><strong>Jina Reader (r.jina.ai)</strong> &mdash; <?php esc_html_e( 'Converts changelog pages to clean text before AI processing. The URL of each tracked page is sent to Jina on every fetch.', 'changelog-tracker' ); ?> <a href="https://jina.ai/privacy-policy/" target="_blank" rel="noopener noreferrer"><?php esc_html_e( 'Privacy Policy', 'changelog-tracker' ); ?></a></li>
-						<li><strong>Google Gemini / OpenAI / Anthropic Claude</strong> &mdash; <?php esc_html_e( 'Changelog page content is sent to your chosen AI provider to generate the summary. No personal data is transmitted.', 'changelog-tracker' ); ?></li>
+						<li><strong>Jina Reader (r.jina.ai)</strong> &mdash; <?php esc_html_e( 'Converts changelog pages to clean text before AI processing. The URL of each tracked page is sent to Jina on every fetch.', 'changescout' ); ?> <a href="https://jina.ai/privacy-policy/" target="_blank" rel="noopener noreferrer"><?php esc_html_e( 'Privacy Policy', 'changescout' ); ?></a></li>
+						<li><strong>Google Gemini / OpenAI / Anthropic Claude</strong> &mdash; <?php esc_html_e( 'Changelog page content is sent to your chosen AI provider to generate the summary. No personal data is transmitted.', 'changescout' ); ?></li>
 					</ul>
 				</div>
 
 				<?php if ( defined( 'WP_DEBUG' ) && WP_DEBUG ) : ?>
 				<div class="aics-card">
-					<h2><?php esc_html_e( 'Debug Information', 'changelog-tracker' ); ?></h2>
+					<h2><?php esc_html_e( 'Debug Information', 'changescout' ); ?></h2>
 					<pre class="aics-debug-pre">
 <?php echo esc_html( 'PHP Version: ' . PHP_VERSION ); ?>
 
@@ -743,7 +743,7 @@ class AIChangelogSummary {
 	/* ───────────────────────── Assets ─────────────────────────── */
 
 	public function enqueue_scripts( $hook ) {
-		if ( 'settings_page_changelog-tracker' === $hook ) {
+		if ( 'settings_page_changescout' === $hook ) {
 			wp_enqueue_style( 'aics-admin', AICS_URL . 'css/admin.css', [], AICS_VERSION );
 			wp_enqueue_script( 'aics-admin', AICS_URL . 'js/changelog-script.js', [ 'jquery' ], AICS_VERSION, true );
 			wp_localize_script( 'aics-admin', 'AICS', [
@@ -780,10 +780,10 @@ class AIChangelogSummary {
 		// Derive default: preview/force-fetch = don't store; scheduled = store.
 		$should_store = is_null( $store ) ? ! $force : $store;
 
-		$stored   = get_option( 'changelog_summaries', [] );
+		$stored   = get_option( 'aics_changelog_summaries', [] );
 		$cached   = isset( $stored[ $url ] ) ? $stored[ $url ] : null;
 		$provider = get_option( 'aics_ai_provider', 'gemini' );
-		$api_key  = get_option( $provider . '_api_key', '' );
+		$api_key  = get_option( 'aics_' . $provider . '_api_key', '' );
 
 		if ( ! $force && $cached &&
 			 ( current_time( 'timestamp' ) - $cached['timestamp'] ) < ( 30 * MINUTE_IN_SECONDS ) ) {
@@ -801,13 +801,13 @@ class AIChangelogSummary {
 			return [
 				'success' => false,
 				/* translators: %s: error message */
-				'message' => sprintf( __( 'Fetch failed: %s', 'changelog-tracker' ), $response->get_error_message() ),
+				'message' => sprintf( __( 'Fetch failed: %s', 'changescout' ), $response->get_error_message() ),
 			];
 		}
 
 		$body = wp_remote_retrieve_body( $response );
 		if ( empty( $body ) ) {
-			return [ 'success' => false, 'message' => __( 'Empty response body.', 'changelog-tracker' ) ];
+			return [ 'success' => false, 'message' => __( 'Empty response body.', 'changescout' ) ];
 		}
 
 		$content      = AICS_Content_Extractor::extract( $body, $url );
@@ -831,7 +831,7 @@ class AIChangelogSummary {
 		if ( ! $ai_result['success'] ) {
 			return [
 				'success' => false,
-				'message' => $ai_result['error'] ?? __( 'AI summarization failed.', 'changelog-tracker' ),
+				'message' => $ai_result['error'] ?? __( 'AI summarization failed.', 'changescout' ),
 			];
 		}
 
@@ -849,13 +849,13 @@ class AIChangelogSummary {
 	}
 
 	private function store_changelog_summary( $url, $summary, $content_hash ) {
-		$stored = get_option( 'changelog_summaries', [] );
+		$stored = get_option( 'aics_changelog_summaries', [] );
 		$stored[ $url ] = [
 			'summary'      => $summary,
 			'content_hash' => $content_hash,
 			'timestamp'    => current_time( 'timestamp' ),
 		];
-		update_option( 'changelog_summaries', $stored );
+		update_option( 'aics_changelog_summaries', $stored );
 	}
 
 	/* ───────────────────────── AJAX: Preview ──────────────────── */
@@ -868,12 +868,12 @@ class AIChangelogSummary {
 		check_ajax_referer( 'aics_nonce', 'security' );
 
 		if ( ! current_user_can( 'manage_options' ) ) {
-			wp_send_json_error( [ 'message' => __( 'Permission denied.', 'changelog-tracker' ) ] );
+			wp_send_json_error( [ 'message' => __( 'Permission denied.', 'changescout' ) ] );
 		}
 
-		$urls = get_option( 'changelog_urls', [] );
+		$urls = get_option( 'aics_changelog_urls', [] );
 		if ( empty( $urls ) ) {
-			wp_send_json_error( [ 'message' => __( 'No URLs configured.', 'changelog-tracker' ) ] );
+			wp_send_json_error( [ 'message' => __( 'No URLs configured.', 'changescout' ) ] );
 		}
 
 		$skip_cache = isset( $_POST['skip_cache'] ) ? absint( $_POST['skip_cache'] ) : 0;
@@ -906,15 +906,15 @@ class AIChangelogSummary {
 		check_ajax_referer( 'aics_nonce', 'security' );
 
 		if ( ! current_user_can( 'manage_options' ) ) {
-			wp_send_json_error( [ 'message' => __( 'Permission denied.', 'changelog-tracker' ) ] );
+			wp_send_json_error( [ 'message' => __( 'Permission denied.', 'changescout' ) ] );
 		}
 
-		$urls        = array_filter( get_option( 'changelog_urls', [] ) );
-		$email       = get_option( 'notification_email', get_option( 'admin_email' ) );
+		$urls        = array_filter( get_option( 'aics_changelog_urls', [] ) );
+		$email       = get_option( 'aics_notification_email', get_option( 'admin_email' ) );
 		$ignore_diff = isset( $_POST['ignore_diff'] ) && '1' === sanitize_text_field( wp_unslash( $_POST['ignore_diff'] ) );
 
 		if ( empty( $urls ) ) {
-			wp_send_json_error( [ 'message' => __( 'No URLs configured.', 'changelog-tracker' ) ] );
+			wp_send_json_error( [ 'message' => __( 'No URLs configured.', 'changescout' ) ] );
 		}
 
 		$summaries  = [];
@@ -946,7 +946,7 @@ class AIChangelogSummary {
 		if ( $should_send ) {
 			$email_summaries = $summaries;
 			if ( $ignore_diff ) {
-				$stored = get_option( 'changelog_summaries', [] );
+				$stored = get_option( 'aics_changelog_summaries', [] );
 				foreach ( $unchanged as $u ) {
 					if ( isset( $stored[ $u ] ) ) {
 						$email_summaries[] = [ 'url' => $u, 'summary' => $stored[ $u ]['summary'], 'changed' => false ];
@@ -971,7 +971,7 @@ class AIChangelogSummary {
 			$display_email = is_array( $email ) ? implode( ', ', $email ) : $email;
 			wp_send_json_success( [
 				/* translators: %s: email address(es) */
-				'message'   => $sent ? sprintf( __( 'Email sent to %s', 'changelog-tracker' ), $display_email ) : __( 'Failed to send email.', 'changelog-tracker' ) . ( $this->last_mail_error ? ' — ' . $this->last_mail_error : '' ),
+				'message'   => $sent ? sprintf( __( 'Email sent to %s', 'changescout' ), $display_email ) : __( 'Failed to send email.', 'changescout' ) . ( $this->last_mail_error ? ' — ' . $this->last_mail_error : '' ),
 				'sent'      => $sent,
 				'changed'   => count( $summaries ),
 				'unchanged' => count( $unchanged ),
@@ -979,7 +979,7 @@ class AIChangelogSummary {
 			] );
 		} else {
 			wp_send_json_success( [
-				'message'   => __( 'No changes detected. Email not sent.', 'changelog-tracker' ),
+				'message'   => __( 'No changes detected. Email not sent.', 'changescout' ),
 				'sent'      => false,
 				'changed'   => 0,
 				'unchanged' => count( $unchanged ),
@@ -1060,13 +1060,13 @@ class AIChangelogSummary {
 		check_ajax_referer( 'aics_nonce', 'security' );
 
 		if ( ! current_user_can( 'manage_options' ) ) {
-			wp_send_json_error( [ 'message' => __( 'Permission denied.', 'changelog-tracker' ) ] );
+			wp_send_json_error( [ 'message' => __( 'Permission denied.', 'changescout' ) ] );
 		}
 
-		$email   = get_option( 'notification_email', get_option( 'admin_email' ) );
-		$subject = __( 'Test Email from Changelog Tracker', 'changelog-tracker' );
-		$message = '<p>' . __( 'This is a test email to verify your WordPress email configuration is working correctly.', 'changelog-tracker' ) . '</p>'
-			. '<p>' . __( 'If you received this email, your setup is ready to send changelog notifications.', 'changelog-tracker' ) . '</p>';
+		$email   = get_option( 'aics_notification_email', get_option( 'admin_email' ) );
+		$subject = __( 'Test Email from Changelog Tracker', 'changescout' );
+		$message = '<p>' . __( 'This is a test email to verify your WordPress email configuration is working correctly.', 'changescout' ) . '</p>'
+			. '<p>' . __( 'If you received this email, your setup is ready to send changelog notifications.', 'changescout' ) . '</p>';
 		$headers = $this->get_email_headers();
 
 		// Capture wp_mail errors.
@@ -1082,11 +1082,11 @@ class AIChangelogSummary {
 
 		if ( $sent ) {
 			/* translators: %s: email address */
-			wp_send_json_success( [ 'message' => sprintf( __( 'Test email sent to %s', 'changelog-tracker' ), $email ) ] );
+			wp_send_json_success( [ 'message' => sprintf( __( 'Test email sent to %s', 'changescout' ), $email ) ] );
 		} else {
 			$error_msg = ! empty( $mail_error )
 				? $mail_error
-				: __( 'wp_mail() returned false. Check your WordPress email configuration or install an SMTP plugin.', 'changelog-tracker' );
+				: __( 'wp_mail() returned false. Check your WordPress email configuration or install an SMTP plugin.', 'changescout' );
 			wp_send_json_error( [ 'message' => $error_msg ] );
 		}
 	}
@@ -1114,8 +1114,8 @@ class AIChangelogSummary {
 	/* ───────────────────────── Cron: Send Email ───────────────── */
 
 	public function send_changelog_email() {
-		$urls  = get_option( 'changelog_urls', [] );
-		$email = get_option( 'notification_email', get_option( 'admin_email' ) );
+		$urls  = get_option( 'aics_changelog_urls', [] );
+		$email = get_option( 'aics_notification_email', get_option( 'admin_email' ) );
 
 		if ( empty( $urls ) || empty( $email ) ) {
 			$this->log_error( 'Missing settings for scheduled email.' );
@@ -1175,20 +1175,20 @@ class AIChangelogSummary {
 	public function add_dashboard_widget() {
 		wp_add_dashboard_widget(
 			'aics_dashboard_widget',
-			__( 'AI Changelog Summary', 'changelog-tracker' ),
+			__( 'AI Changelog Summary', 'changescout' ),
 			[ $this, 'render_dashboard_widget' ]
 		);
 	}
 
 	public function render_dashboard_widget() {
-		$stored = get_option( 'changelog_summaries', [] );
+		$stored = get_option( 'aics_changelog_summaries', [] );
 
 		if ( empty( $stored ) ) {
 			echo '<p>' . wp_kses_post(
 				sprintf(
 					/* translators: %s: settings page URL */
-					__( 'No changelog summaries yet. <a href="%s">Configure the plugin</a> to get started.', 'changelog-tracker' ),
-					esc_url( admin_url( 'options-general.php?page=changelog-tracker' ) )
+					__( 'No changelog summaries yet. <a href="%s">Configure the plugin</a> to get started.', 'changescout' ),
+					esc_url( admin_url( 'options-general.php?page=changescout' ) )
 				)
 			) . '</p>';
 			return;
@@ -1205,7 +1205,7 @@ class AIChangelogSummary {
 				<div class="aics-widget-time">
 					<?php
 					/* translators: %s: human-readable time difference */
-					echo esc_html( sprintf( __( '%s ago', 'changelog-tracker' ), $time_ago ) );
+					echo esc_html( sprintf( __( '%s ago', 'changescout' ), $time_ago ) );
 					?>
 				</div>
 			</div>
@@ -1213,8 +1213,8 @@ class AIChangelogSummary {
 		}
 		?>
 		<div style="margin-top:12px;display:flex;gap:8px;">
-			<button id="aics-widget-refresh" class="button button-small button-primary"><?php esc_html_e( 'Refresh Now', 'changelog-tracker' ); ?></button>
-			<a href="<?php echo esc_url( admin_url( 'options-general.php?page=changelog-tracker' ) ); ?>" class="button button-small"><?php esc_html_e( 'View Full Summary', 'changelog-tracker' ); ?></a>
+			<button id="aics-widget-refresh" class="button button-small button-primary"><?php esc_html_e( 'Refresh Now', 'changescout' ); ?></button>
+			<a href="<?php echo esc_url( admin_url( 'options-general.php?page=changescout' ) ); ?>" class="button button-small"><?php esc_html_e( 'View Full Summary', 'changescout' ); ?></a>
 		</div>
 		<span id="aics-widget-result" style="display:block;margin-top:6px;font-size:12px;"></span>
 		<?php
@@ -1223,7 +1223,7 @@ class AIChangelogSummary {
 	/* ───────────────────────── Cleanup ─────────────────────────── */
 
 	public function clear_old_changelog_summaries() {
-		$stored  = get_option( 'changelog_summaries', [] );
+		$stored  = get_option( 'aics_changelog_summaries', [] );
 		$now     = current_time( 'timestamp' );
 		$changed = false;
 
@@ -1235,13 +1235,13 @@ class AIChangelogSummary {
 		}
 
 		if ( $changed ) {
-			update_option( 'changelog_summaries', $stored );
+			update_option( 'aics_changelog_summaries', $stored );
 		}
 	}
 
 	public function deactivate() {
 		wp_clear_scheduled_hook( 'aics_changelog_email' );
-		wp_clear_scheduled_hook( 'changelog_weekly_email' );
+		// Legacy hook removed.
 	}
 }
 

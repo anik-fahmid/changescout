@@ -10,13 +10,13 @@ if ( ! defined( 'WP_UNINSTALL_PLUGIN' ) ) {
 
 // Remove all plugin options.
 $options = [
-	'changelog_urls',
+	'aics_changelog_urls',
 	'aics_ai_provider',
-	'gemini_api_key',
-	'openai_api_key',
-	'claude_api_key',
+	'aics_gemini_api_key',
+	'aics_openai_api_key',
+	'aics_claude_api_key',
 	'aics_max_tokens',
-	'notification_email',
+	'aics_notification_email',
 	'aics_email_from_name',
 	'aics_email_from_address',
 	'aics_email_frequency',
@@ -28,7 +28,7 @@ $options = [
 	'aics_smtp_encryption',
 	'aics_smtp_username',
 	'aics_smtp_password',
-	'changelog_summaries',
+	'aics_changelog_summaries',
 ];
 
 foreach ( $options as $option ) {
