@@ -146,8 +146,8 @@ class AICS_Changelog_Summary {
 
 	public function add_plugin_page() {
 		add_options_page(
-			__( 'Changelog Tracker', 'changescout' ),
-			__( 'Changelog Tracker', 'changescout' ),
+			__( 'ChangeScout', 'changescout' ),
+			__( 'ChangeScout', 'changescout' ),
 			'manage_options',
 			'changescout',
 			[ $this, 'render_settings_page' ]
@@ -711,7 +711,6 @@ class AICS_Changelog_Summary {
 					<h4><?php esc_html_e( 'External Services', 'changescout' ); ?></h4>
 					<p><?php esc_html_e( 'This plugin connects to the following external services:', 'changescout' ); ?></p>
 					<ul>
-						<li><strong>Jina Reader (r.jina.ai)</strong> &mdash; <?php esc_html_e( 'Converts changelog pages to clean text before AI processing. The URL of each tracked page is sent to Jina on every fetch.', 'changescout' ); ?> <a href="https://jina.ai/legal/" target="_blank" rel="noopener noreferrer"><?php esc_html_e( 'Privacy Policy', 'changescout' ); ?></a></li>
 						<li><strong>Google Gemini / OpenAI / Anthropic Claude</strong> &mdash; <?php esc_html_e( 'Changelog page content is sent to your chosen AI provider to generate the summary. No personal data is transmitted.', 'changescout' ); ?></li>
 					</ul>
 				</div>
@@ -1061,7 +1060,7 @@ class AICS_Changelog_Summary {
 		}
 
 		$email   = get_option( 'aics_notification_email', get_option( 'admin_email' ) );
-		$subject = __( 'Test Email from Changelog Tracker', 'changescout' );
+		$subject = __( 'Test Email from ChangeScout', 'changescout' );
 		$message = '<p>' . __( 'This is a test email to verify your WordPress email configuration is working correctly.', 'changescout' ) . '</p>'
 			. '<p>' . __( 'If you received this email, your setup is ready to send changelog notifications.', 'changescout' ) . '</p>';
 		$headers = $this->get_email_headers();
