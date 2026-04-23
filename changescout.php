@@ -146,7 +146,7 @@ class AICS_Changelog_Summary {
 	/* ───────────────────────── Admin Menu ────────────────────── */
 
 	public function add_plugin_page() {
-		add_options_page(
+		add_management_page(
 			__( 'ChangeScout', 'changescout' ),
 			__( 'ChangeScout', 'changescout' ),
 			'manage_options',
@@ -743,7 +743,7 @@ class AICS_Changelog_Summary {
 	/* ───────────────────────── Assets ─────────────────────────── */
 
 	public function enqueue_scripts( $hook ) {
-		if ( 'settings_page_changescout' === $hook ) {
+		if ( in_array( $hook, [ 'settings_page_changescout', 'tools_page_changescout' ], true ) ) {
 			wp_enqueue_style( 'aics-admin', AICS_URL . 'css/admin.css', [], AICS_VERSION );
 			wp_enqueue_script( 'aics-admin', AICS_URL . 'js/changelog-script.js', [ 'jquery' ], AICS_VERSION, true );
 			wp_localize_script( 'aics-admin', 'AICS', [
@@ -1236,7 +1236,7 @@ class AICS_Changelog_Summary {
 				sprintf(
 					/* translators: %s: settings page URL */
 					__( 'No changelog summaries yet. <a href="%s">Configure the plugin</a> to get started.', 'changescout' ),
-					esc_url( admin_url( 'options-general.php?page=changescout' ) )
+					esc_url( admin_url( 'tools.php?page=changescout' ) )
 				)
 			) . '</p>';
 			return;
@@ -1262,7 +1262,7 @@ class AICS_Changelog_Summary {
 		?>
 		<div style="margin-top:12px;display:flex;gap:8px;">
 			<button id="aics-widget-refresh" class="button button-small button-primary"><?php esc_html_e( 'Refresh Now', 'changescout' ); ?></button>
-			<a href="<?php echo esc_url( admin_url( 'options-general.php?page=changescout' ) ); ?>" class="button button-small"><?php esc_html_e( 'View Full Summary', 'changescout' ); ?></a>
+			<a href="<?php echo esc_url( admin_url( 'tools.php?page=changescout' ) ); ?>" class="button button-small"><?php esc_html_e( 'View Full Summary', 'changescout' ); ?></a>
 		</div>
 		<span id="aics-widget-result" style="display:block;margin-top:6px;font-size:12px;"></span>
 		<?php
