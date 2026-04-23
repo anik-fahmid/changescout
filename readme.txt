@@ -8,40 +8,56 @@ Requires PHP: 7.4
 License: GPLv2 or later
 License URI: https://www.gnu.org/licenses/gpl-2.0.html
 
-AI-powered changelog tracking that monitors plugin/service release pages and emails you summaries of what changed.
+AI-powered changelog monitoring for product and marketing teams tracking plugins, SaaS tools, and product updates.
 
 == Description ==
 
-**ChangeScout** monitors changelog URLs (plugin pages, SaaS apps, documentation sites) and uses AI to generate plain-English summaries of what changed. Summaries are delivered to your inbox on your chosen schedule or on demand.
+**ChangeScout** helps product managers, marketers, founders, researchers, customer success teams, and operations teams keep up with product updates without manually checking changelog pages every week.
+
+Add the changelog URLs you want to monitor, choose your preferred AI provider, and ChangeScout will fetch the latest updates, detect meaningful changes, and generate easy-to-read summaries you can review in WordPress or receive by email.
+
+This is useful for:
+
+* **Product managers** who want to monitor competitor features, releases, and roadmap signals
+* **Marketers** who want to track product launches, positioning changes, and messaging updates
+* **Founders** who want a quick view of market movement without reviewing long changelog pages
+* **Researchers and analysts** who want structured summaries of product changes across multiple tools
+* **Customer success and support teams** who want to stay aware of updates that may affect customers
+* **Operations teams** who want a lightweight way to monitor important tools and platforms
 
 = Key Features =
 
-* **Multi-URL tracking** — monitor multiple changelog pages simultaneously
-* **AI summaries** — supports Google Gemini, OpenAI (GPT-4), and Anthropic Claude
-* **Scheduled emails** — weekly, bi-weekly, or monthly delivery
-* **Force send** — fetch and email latest changelogs on demand (independent from scheduled emails)
-* **Change detection** — only emails when content actually changes (MD5 hash comparison)
-* **Custom SMTP** — configure Gmail or any SMTP server for reliable delivery
-* **Auto-detect** — automatically find changelog URLs from any domain
-* **Dashboard widget** — quick-glance status from the WordPress admin dashboard
+* **Multi-URL tracking** — monitor multiple changelog pages from plugins, SaaS tools, documentation sites, or product update pages
+* **AI summaries** — generate readable summaries using Google Gemini, OpenAI, or Anthropic Claude
+* **Scheduled emails** — receive changelog summaries weekly, bi-weekly, or monthly
+* **Force send** — fetch and email the latest changelogs on demand without waiting for the next schedule
+* **Change detection** — only send summaries when the source content actually changes
+* **Custom SMTP** — use Gmail or any SMTP server for more reliable delivery
+* **Auto-detect** — try common changelog and release-note URLs automatically from a domain
+* **Dashboard widget** — review recent summaries directly from the WordPress admin dashboard
 
 = External Services =
 
-**Jina Reader (r.jina.ai)**
-* Service: https://jina.ai
-* Privacy Policy: https://jina.ai/legal/
+This plugin connects to third-party services to fetch and summarize changelog content.
 
 **Google Gemini API**
+Used when you choose Gemini as your AI provider. Extracted changelog content is sent to Gemini to generate a summary.
 * Service: https://ai.google.dev
 * Terms: https://ai.google.dev/terms
 
 **OpenAI API**
+Used when you choose OpenAI as your AI provider. Extracted changelog content is sent to OpenAI to generate a summary.
 * Service: https://openai.com
 * Privacy Policy: https://openai.com/policies/privacy-policy/
 
 **Anthropic Claude API**
+Used when you choose Claude as your AI provider. Extracted changelog content is sent to Anthropic to generate a summary.
 * Service: https://anthropic.com
 * Privacy Policy: https://www.anthropic.com/privacy
+
+**Jina Reader (r.jina.ai)**
+* Service: https://jina.ai
+* Privacy Policy: https://jina.ai/legal/
 
 == Installation ==
 
@@ -58,25 +74,21 @@ AI-powered changelog tracking that monitors plugin/service release pages and ema
 
 Google Gemini (free tier available), OpenAI GPT-4, and Anthropic Claude. You need to provide your own API key for the chosen provider.
 
-= How does change detection work? =
-
-The plugin stores an MD5 hash of each changelog page's content. On each fetch, it compares the new hash with the stored one. If they differ, the page is summarised and included in the next email.
-
 = Does the force-send button affect scheduled emails? =
 
 No. Force-send is completely independent from scheduled emails. It bypasses the cache and sends immediately without updating the change-detection hash, so scheduled emails still fire normally.
 
-= What is Jina Reader used for? =
-
-Jina Reader (r.jina.ai) converts changelog web pages into clean markdown before they are sent to the AI provider. This improves summary quality and reduces token usage. The plugin sends only the URL to Jina Reader; Jina fetches the page and returns its text content.
-
-= Can I use this without an AI provider API key? =
-
-No. An API key for at least one supported provider is required to generate summaries.
-
 = How do I set up Gmail SMTP? =
 
 Enable 2-Factor Authentication on your Google account, then generate an App Password at myaccount.google.com/apppasswords. Use `smtp.gmail.com`, port `587`, encryption `TLS`, and enter your Gmail address and the App Password.
+
+== Screenshots ==
+
+1. General settings screen for AI provider and changelog URL configuration
+2. Notification settings for email schedule and delivery options
+3. SMTP configuration screen for custom email sending setup
+4. Changelog preview and testing tools inside the plugin settings
+5. WordPress dashboard widget showing recent changelog summaries at a glance
 
 == Changelog ==
 
