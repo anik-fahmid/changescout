@@ -3,7 +3,7 @@
 Plugin Name: ChangeScout
 Plugin URI: https://fahmidsroadmap.com/changescout/
 Description: AI-powered changelog tracking and summarization with multi-provider support.
-Version: 1.0.2
+Version: 1.0.3
 Author: Fahmid Hasan
 Author URI: https://fahmidsroadmap.com/
 Text Domain: changescout
@@ -12,14 +12,14 @@ License URI: https://www.gnu.org/licenses/gpl-2.0.html
 Requires at least: 5.6
 Tested up to: 6.9
 Requires PHP: 7.4
-Stable tag: 1.0.2
+Stable tag: 1.0.3
 */
 
 if ( ! defined( 'ABSPATH' ) ) {
 	exit;
 }
 
-define( 'AICS_VERSION', '1.0.2' );
+define( 'AICS_VERSION', '1.0.3' );
 define( 'AICS_PATH', plugin_dir_path( __FILE__ ) );
 define( 'AICS_URL', plugin_dir_url( __FILE__ ) );
 
@@ -31,7 +31,7 @@ require_once AICS_PATH . 'includes/class-auto-detect.php';
 class AICS_Changelog_Summary {
 
 	private $default_url_count   = 4;
-	private $max_url_count       = 5;
+	private $max_url_count       = 4;
 	private $general_group       = 'aics-general-settings';
 	private $notifications_group = 'aics-notifications-settings';
 	private $last_mail_error     = '';

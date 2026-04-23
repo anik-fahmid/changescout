@@ -85,6 +85,8 @@ class AICS_Content_Extractor {
             return '';
         }
 
+        usort( $entries, [ __CLASS__, 'sort_entries_by_date_desc' ] );
+
         $output = [];
         foreach ( array_slice( $entries, 0, self::MAX_VERSIONS_PER_SECTION ) as $entry ) {
             $title   = trim( wp_strip_all_tags( $entry['title'] ?? '' ) );
@@ -139,6 +141,48 @@ class AICS_Content_Extractor {
                 }
             }
         }
+    }
+
+    /**
+     * Sort changelog entries with newest dated items first.
+     * Entries without a parseable date are kept after dated entries.
+     *
+     * @param array $a Entry A.
+     * @param array $b Entry B.
+     * @return int
+     */
+    private static function sort_entries_by_date_desc( $a, $b ) {
+        $a_time = self::parse_entry_date( $a['date'] ?? '' );
+        $b_time = self::parse_entry_date( $b['date'] ?? '' );
+
+        if ( $a_time === $b_time ) {
+            return 0;
+        }
+
+        if ( false === $a_time ) {
+            return 1;
+        }
+
+        if ( false === $b_time ) {
+            return -1;
+        }
+
+        return ( $a_time > $b_time ) ? -1 : 1;
+    }
+
+    /**
+     * Parse an entry date into a comparable timestamp.
+     *
+     * @param string $date Raw entry date.
+     * @return int|false
+     */
+    private static function parse_entry_date( $date ) {
+        if ( empty( $date ) ) {
+            return false;
+        }
+
+        $timestamp = strtotime( $date );
+        return false === $timestamp ? false : $timestamp;
     }
 
     /**

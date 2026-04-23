@@ -3,7 +3,7 @@ Contributors: anikfahmid
 Tags: changelog, ai, email notifications, release notes, automation
 Requires at least: 5.6
 Tested up to: 6.9
-Stable tag: 1.0.2
+Stable tag: 1.0.3
 Requires PHP: 7.4
 License: GPLv2 or later
 License URI: https://www.gnu.org/licenses/gpl-2.0.html
@@ -92,6 +92,14 @@ Enable 2-Factor Authentication on your Google account, then generate an App Pass
 
 == Changelog ==
 
+= 1.0.3 =
+* Improved changelog extraction for embedded Featurebase and Next.js changelog pages
+* Improved AI summary guidance for more human-friendly, source-grounded summaries
+* Moved the ChangeScout admin page under Tools in WordPress admin
+* Fixed admin styles and scripts loading on the new Tools page
+* Kept changelog URL handling limited to 4 entries consistently
+* Sorted embedded changelog entries by date so the latest release is selected correctly
+
 = 1.0.2 =
 * Fixed the send time dropdown labels to display clean times like 8:00 AM
 
@@ -111,6 +119,9 @@ Enable 2-Factor Authentication on your Google account, then generate an App Pass
 * Content extraction via Jina Reader
 
 == Upgrade Notice ==
+
+= 1.0.3 =
+Improves changelog extraction, summary quality, and admin page behavior.
 
 = 1.0.2 =
 Fixes the send time dropdown labels.
