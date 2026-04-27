@@ -1,4 +1,4 @@
-=== ChangeScout ===
+=== ChangeScout – Track Changelogs & Release Notes Automatically ===
 Contributors: anikfahmid
 Tags: changelog, ai, email notifications, release notes, automation
 Requires at least: 5.6
@@ -63,7 +63,7 @@ Used when you choose Claude as your AI provider. Extracted changelog content is 
 
 1. Upload the `changescout` folder to `/wp-content/plugins/`
 2. Activate the plugin through the **Plugins** menu in WordPress
-3. Navigate to **Settings > ChangeScout**
+3. Navigate to **Tools > ChangeScout**
 4. Enter your AI provider API key (Gemini, OpenAI, or Claude)
 5. Add your changelog URLs to track
 6. Configure your notification email and schedule
