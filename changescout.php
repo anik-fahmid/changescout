@@ -1,6 +1,6 @@
 <?php
 /*
-Plugin Name: ChangeScout – Track Changelogs & Release Notes Automatically
+Plugin Name: ChangeScout – Track Changelogs & Product Updates Automatically
 Plugin URI: https://fahmidsroadmap.com/changescout/
 Description: AI-powered changelog tracking and summarization with multi-provider support.
 Version: 1.0.4
