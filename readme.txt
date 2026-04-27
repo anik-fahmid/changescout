@@ -1,4 +1,4 @@
-=== ChangeScout – Track Changelogs & Release Notes Automatically ===
+=== ChangeScout ===
 Contributors: anikfahmid
 Tags: changelog, ai, email notifications, release notes, automation
 Requires at least: 5.6
@@ -8,11 +8,11 @@ Requires PHP: 7.4
 License: GPLv2 or later
 License URI: https://www.gnu.org/licenses/gpl-2.0.html
 
-AI-powered changelog monitoring for product and marketing teams tracking plugins, SaaS tools, and product updates.
+Track changelogs & release notes automatically with AI-powered summaries for plugins, SaaS tools, and product updates.
 
 == Description ==
 
-**ChangeScout** helps product managers, marketers, founders, researchers, customer success teams, and operations teams keep up with product updates without manually checking changelog pages every week.
+**ChangeScout** helps product managers, marketers, founders, researchers, customer success teams, and operations teams track changelogs and release notes automatically without manually checking product update pages every week.
 
 Add the changelog URLs you want to monitor, choose your preferred AI provider, and ChangeScout will fetch the latest updates, detect meaningful changes, and generate easy-to-read summaries you can review in WordPress or receive by email.
 
